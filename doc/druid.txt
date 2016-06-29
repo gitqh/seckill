@@ -1,0 +1,20 @@
+# druid 加密数据库连接密码
+
+java -cp druid-1.0.16.jar com.alibaba.druid.filter.config.ConfigTools you_password
+
+privateKey:MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA6+4avFnQKP+O7bu5YnxWoOZjv3no4aFV558HTPDoXs6EGD0HP7RzzhGPOKmpLQ1BbA5viSht+aDdaxXp6SvtMQIDAQABAkAeQt4fBo4SlCTrDUcMANLDtIlax/I87oqsONOg5M2JS0jNSbZuAXDv7/YEGEtMKuIESBZh7pvVG8FV531/fyOZAiEA+POkE+QwVbUfGyeugR6IGvnt4yeOwkC3bUoATScsN98CIQDynBXC8YngDNwZ62QPX+ONpqCel6g8NO9VKC+ETaS87wIhAKRouxZL38PqfqV/WlZ5ZGd0YS9gA360IK8zbOmHEkO/AiEAsES3iuvzQNYXFL3x9Tm2GzT1fkSx9wx+12BbJcVD7AECIQCD3Tv9S+AgRhQoNcuaSDNluVrL/B/wOmJRLqaOVJLQGg==
+publicKey:MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOvuGrxZ0Cj/ju27uWJ8VqDmY7956OGhVeefB0zw6F7OhBg9Bz+0c84RjzipqS0NQWwOb4kobfmg3WsV6ekr7TECAwEAAQ==
+password:PNak4Yui0+2Ft6JSoKBsgNPl+A033rdLhFw+L0np1o+HDRrCo9VkCuiiXviEMYwUgpHZUFxb2FpE0YmSguuRww==
+
+注意1.0.20版本生成公钥与私钥，无法正确解密
+1.0.12版本及之前测试可解密
+
+# spring配置
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+     init-method="init" destroy-method="close">
+     <property name="url" value="jdbc:derby:memory:spring-test;create=true" />
+     <property name="username" value="sa" />
+     <property name="password" value="${password}" />
+     <property name="filters" value="config" />
+     <property name="connectionProperties" value="config.decrypt=true;config.decrypt.key=${publickey}" />
+</bean>

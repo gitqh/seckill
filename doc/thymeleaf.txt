@@ -1,0 +1,99 @@
+1.简单的 Thymeleaf 应用
+　　　1）只需加入thymeleaf-2.1.4.RELEASE.jar（http://www.thymeleaf.org/download.html ）包，若用maven，则加入如下配置
+
+<dependency>
+    <groupId>org.thymeleaf</groupId>
+    <artifactId>thymeleaf</artifactId>
+    <version>2.1.4</version>
+</dependency>
+
+　　　2）然后增加头文件（如下）
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+　　    3）就可以用th标签动态替换掉静态数据了。如下图，后台传出的message会将静态数据“Red Chair”替换掉，若访问静态页面，则显示数据“Red Chair”。
+
+<td th:text="${message}">Red Chair</td>
+
+ 　 2.整合spring
+
+　　 1）加入thymeleaf-spring4-2.1.4.RELEASE.jar（http://www.thymeleaf.org/download.html ）包，若用maven，则加入如下配置
+
+<dependency>
+    <groupId>org.thymeleaf</groupId>
+    <artifactId>thymeleaf-spring3</artifactId>
+    <version>2.1.4</version>
+</dependency>
+
+　　 2）在servlet配置文件中加入如下代码
+复制代码
+
+<!-- Scans the classpath of this application for @Components to deploy as beans -->
+       <context:component-scan base-package="com.test.thymeleaf.controller" />
+
+       <!-- Configures the @Controller programming model -->
+       <mvc:annotation-driven />
+
+        <!--Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->
+        <!--springMVC+jsp的跳转页面配置-->
+       <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+              <!--<property name="prefix" value="/WEB-INF/views/" />-->
+              <!--<property name="suffix" value=".jsp" />-->
+       <!--</bean>-->
+
+       <!-- 3:springMVC+thymeleaf的跳转页面配置 -->
+       <bean id="templateResolver"
+               class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+           <property name="prefix" value="/WEB-INF/views/" />
+           <property name="suffix" value=".html" />
+           <property name="templateMode" value="HTML5" />
+         </bean>
+
+         <bean id="templateEngine"
+               class="org.thymeleaf.spring4.SpringTemplateEngine">
+           <property name="templateResolver" ref="templateResolver" />
+         </bean>
+
+         <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+           <property name="templateEngine" ref="templateEngine" />
+         </bean>
+
+复制代码
+
+　　3）将静态页面加到项目中，更改文件头，加入th标签即可。
+
+    4） thymeleaf href 中变量需用url 需要用 '/seckill/' + ${id} +'/execution'表示
+    或者'/seckill/{id}/execution(id=${id})'
+
+    5）thymeleaf 中文乱码问题解决：
+
+    <bean id="templateResolver"
+              class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+            <property name="prefix" value="/WEB-INF/views/" />
+            <property name="suffix" value=".html" />
+            <property name="templateMode" value="HTML5" />
+            <property name="characterEncoding" value="utf-8"/>
+        </bean>
+
+        <bean id="templateEngine"
+              class="org.thymeleaf.spring4.SpringTemplateEngine">
+            <property name="templateResolver" ref="templateResolver" />
+        </bean>
+
+        <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+            <property name="templateEngine" ref="templateEngine" />
+            <property name="characterEncoding" value="utf-8"/>
+        </bean>
+
+    6）css js 脚本引入：相对路径，cdn方式待研究
+    cdn方式：@{//app...} 形式
+    <link rel="stylesheet"
+              th:href="@{//apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css}"/>
+    本地webjar方式：pom下载webjar后，如下所示配置
+    <script th:src="@{/webjars/html5shiv/3.7.3/html5shiv.min.js}"></script>
+    本地方式：
+    <script type="text/javascript" src="../../static/script/seckill.js"></script>
+
+    7）bootstrap 图标不显示：需要拷贝fonts到目录下
