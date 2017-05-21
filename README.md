@@ -1,2 +1,1 @@
-A secondkill project
-first pull request
+秒杀操作样例项目
